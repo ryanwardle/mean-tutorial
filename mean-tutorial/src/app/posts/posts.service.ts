@@ -13,11 +13,11 @@ export class PostsService {
 
   getPosts() {
     this.http.get<{message: string, posts: any}>('http://localhost:3000/api/posts').pipe(map((postData) => {
-      return postData.posts.map(posts => {
+      return postData.posts.map(post => {
         return {
-          title: posts.title,
-          content: posts.content,
-          id: posts._id
+          title: post.title,
+          content: post.content,
+          id: post._id
         };
       });
     })).subscribe(transformedPosts => {
@@ -30,6 +30,10 @@ export class PostsService {
     return this.postsUpdated.asObservable();
   }
 
+  getPost(id: string) {
+    return {...this.posts.find(p => p.id === id)};
+  }
+
   addPost(title: string, content: string) {
     const post: Post = {id: null, title, content};
     this.http.post<{message: string, postId: string}>('http://localhost:3000/api/posts', post).subscribe((responseData) => {
@@ -37,6 +41,17 @@ export class PostsService {
       post.id = id;
       this.posts.push(post);
       this.postsUpdated.next([...this.posts]);
+    });
+  }
+
+  updatePost(id: string, title: string, content: string) {
+    const post: Post  = {
+      id,
+      title,
+      content
+    };
+    this.http.put('http://localhost:3000/api/posts/' + id, post).subscribe((response) => {
+      console.log(response);
     });
   }
 
