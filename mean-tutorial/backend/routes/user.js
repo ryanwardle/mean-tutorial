@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const router = express.Router();
 
@@ -11,14 +12,49 @@ router.post('/signup', (req, res, next) => {
       password: hash
     });
     user.save().then(result => {
-      result.status(201).json({
+      res.status(201).json({
         message: 'User created!',
         result: result
       });
     }).catch(err => {
-      err.status(500).json({
+      res.status(500).json({
         error: err
       });
+    });
+  });
+});
+
+router.post('/login', (req, res, next) => {
+  // Need to assign to get user value outside of initial then block, value assigned below.
+  let fetchedUser;
+
+  // Checks if email exists
+  User.findOne({email: req.body.email}).then(user => {
+    if(!user) {
+      return res.status(401).json({
+        message: 'Auth failed'
+      });
+    }
+
+    fetchedUser = user;
+    // Checks if the password is valid, will return promise which has 'then' chained to it.
+    return bcrypt.compare(req.body.password, user.password)
+  }).then(result => {
+    if (!result) {
+      return res.status(401).json({
+        message: 'Auth failed'
+      });
+    }
+    const token = jwt.sign({email: fetchedUser.email, userId: fetchedUser._id},
+                           'secret_this_should_be_longer',
+                           {expiresIn: '1h'}
+                          );
+    res.status(200).json({
+      token: token
+    })
+  }).catch(err => {
+    return res.status(401).json({
+      message: 'Auth failed'
     });
   });
 });
