@@ -32,10 +32,12 @@
     </li>
     <li>
       <button mat-button
-              *ngIf="userIsAuthenticated">
+              *ngIf="userIsAuthenticated"
+              (click)="onLogout()">
         Logout
       </button>
     </li>
 
   </ul>
 </mat-toolbar>
+
