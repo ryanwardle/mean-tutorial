@@ -6,7 +6,10 @@ const app = express();
 const postsRoutes = require('./routes/posts');
 const userRoutes = require('./routes/user');
 
-mongoose.connect('mongodb+srv://ryan:' + process.env.MONGO_ATLAS_PW + '@mean-tutorial-8x7sf.mongodb.net/node-angular?retryWrites=true&w=majority').then(() => {
+console.log(process.env);
+console.log(process.env.JWT_KEY)
+
+mongoose.connect('mongodb+srv://ryan:tG4K2iRg4u7lMKcb@mean-tutorial-8x7sf.mongodb.net/node-angular?retryWrites=true&w=majority').then(() => {
   console.log('Connected to database')
 }).catch(() => {
   console.log('Connection failed')
